@@ -20,13 +20,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                bat 'mvn clean package -DskipTests'
+                sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t %IMAGE_NAME%:latest .'
+                sh 'docker build -t %IMAGE_NAME%:latest .'
             }
         }
 
@@ -37,21 +37,21 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
+                    sh 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
                 }
             }
         }
 
         stage('Docker Push') {
             steps {
-                bat 'docker push %IMAGE_NAME%:latest'
+                sh 'docker push %IMAGE_NAME%:latest'
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                bat 'kubectl apply -f k8s/deployment.yaml'
-                bat 'kubectl apply -f k8s/service.yaml'
+                sh 'kubectl apply -f k8s/deployment.yaml'
+                sh 'kubectl apply -f k8s/service.yaml'
             }
         }
     }
